@@ -18,5 +18,3 @@ deliverables:
           path: '../../resources'
         - name: 'args.gen.task.lbl'
           value: 'YES'
-        - name: 'args.hdr'
-          href: '../../resources/header.xml'
