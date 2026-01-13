@@ -22,5 +22,3 @@ deliverables:
           href: '../../resources/header.xml'
         - name: 'args.rellinks'
           value: 'noparent'
-        - name: 'html5.toc.generate'
-          value: 'no'
