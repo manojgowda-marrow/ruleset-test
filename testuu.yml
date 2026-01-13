@@ -18,5 +18,5 @@ resources:
     memory: "128Mi"
 
 service:
-  type: ClusterIP
+    type: ClusterIP
   port: 80
