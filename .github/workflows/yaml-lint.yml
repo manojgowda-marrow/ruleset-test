@@ -5,7 +5,6 @@ on:
   push:
     branches:
       - main
-      - develop   # add if you protect develop
 
 jobs:
   yamllint:
@@ -16,5 +15,5 @@ jobs:
       - name: Install yamllint
         run: pip install yamllint
 
-      - name: Run yamllint
+      - name: Run yamllint test
         run: yamllint .
