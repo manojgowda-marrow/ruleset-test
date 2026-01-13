@@ -20,5 +20,3 @@ deliverables:
           value: 'YES'
         - name: 'args.hdr'
           href: '../../resources/header.xml'
-        - name: 'args.rellinks'
-          value: 'noparent'
