@@ -1,22 +1,32 @@
-app:
-  name: sample-app
-  environment: dev
+# This is a comment in YAML (lines starting with # are ignored)
+--- # Document separator
 
-replicaCount: 2
+# Key-value pairs:
+string_example: "Hello, YAML!"
+another_string: Hello, YAML! # Quotes are often optional for strings
+integer_example: 42
+float_example: 3.14159
+boolean_true: true
+boolean_false: false
+null_example: null
+today: 2025-01-13 # ISO 8601 date format
+time: 12:00:00.50 # ISO 8601 time format
 
-image:
-  repository: nginx
-  tag: "1.25"
-  pullPolicy: IfNotPresent
+# Lists (sequences) using hyphens:
+programming_languages:
+  - Python
+  - JavaScript
+  - Ruby
+  - Java
 
-resources:
-  limits:
-    cpu: "500m"
-    memory: "256Mi"
-  requests:
-    cpu: "250m"
-    memory: "128Mi"
+# Inline lists can use square brackets (JSON compatible):
+inline_list: [ item1, item2, item3 ]
 
-service:
-  type: ClusterIP
-  port: 80
+# Nested structures (maps within maps) using indentation:
+person:
+  name: John Doe
+  age: 30
+  location:
+    city: New York
+    state: NY
+  is_student: false
