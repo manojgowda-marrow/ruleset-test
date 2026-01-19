@@ -1,9 +1,10 @@
 includes:
-  - 'common.yaml'
+ - 'common.yaml'   # ❌ wrong indentation (should be two spaces)
+
 deliverables:
   - name: 'HTML5'
     context:
-      idref: 'html'
+      idref 'html'   # ❌ missing colon
     output: '.'
     publication:
       transtype: 'html5'
@@ -14,5 +15,5 @@ deliverables:
           value: 'dita-ot-doc.css'
         - name: 'args.csspath'
           value: 'css'
-        # - name: 'args.cssroot'
-        #   path: '../../resources'
+        - name: 'args.cssroot'
+          path: '../../resources'
