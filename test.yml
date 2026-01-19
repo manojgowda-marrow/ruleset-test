@@ -14,5 +14,4 @@ deliverables:
           value: 'dita-ot-doc.css'
         - name: 'args.csspath'
           value: 'css'
-        # - name: 'args.cssroot'
-        #   path: '../../resources'
+        - name: 'args.cssroot'
