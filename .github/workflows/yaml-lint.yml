@@ -8,6 +8,7 @@ on:
 
 jobs:
   yaml-lint:
-    uses: org/ruleset-test-ci/.github/workflows/yml-lint.yml@main
+    uses: manojgowda-marrow/ruleset-test-ci/.github/workflows/yml-lint.yml@main
     with:
       base_ref: main
+
