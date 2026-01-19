@@ -1,4 +1,4 @@
-name: YAML Lint
+name: CI
 
 on:
   pull_request:
@@ -7,16 +7,7 @@ on:
       - "**/*.yaml"
 
 jobs:
-  yamllint:
-    name: YAML Lint Check
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Install yamllint
-        run: pip install yamllint
-
-      - name: Run yamllint
-        run: yamllint .
+  yaml-lint:
+    uses: org/central-ci/.github/workflows/yaml-lint.yml@v1
+    with:
+      base_ref: main
