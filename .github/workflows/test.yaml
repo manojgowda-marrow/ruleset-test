@@ -8,12 +8,10 @@ branches:
 jobs:
 test-environment:
 runs-on: ubuntu-latest
+environment: Test-staging
 
 ```
-environment:
-  name: Test-staging
-
 steps:
-  - name: Print message
-    run: echo "If you see this, the environment approval was granted!"
+  - name: Test step
+    run: echo "Environment approved and job started!"
 ```
