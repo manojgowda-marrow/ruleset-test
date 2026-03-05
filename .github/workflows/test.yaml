@@ -1,17 +1,13 @@
 name: Test Environment Approval
 
 on:
-push:
-branches:
-- main
+  push:
+    branches: [ main ]
 
 jobs:
-test-environment:
-runs-on: ubuntu-latest
-environment: Test-staging
-
-```
-steps:
-  - name: Test step
-    run: echo "Environment approved and job started!"
-```
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: Test-staging
+    steps:
+      - run: echo "If this runs, approval was granted"
