@@ -5,9 +5,18 @@ on:
     branches: [ main ]
 
 jobs:
-  deploy:
+  Plan:
     runs-on: ubuntu-latest
+    steps:
+      - run: echo "This is before approval"
+      - run: echo "Hellow marrow"
+      - run: echo "Terraform plan"
     environment:
       name: Test-stage
+  Apply:
+    runs-on: ubuntu-latest
     steps:
-      - run: echo "If this runs, approval was granted"
+      - run: echo "This is After approval"
+      - run: echo "Bye marrow"
+      - run: echo "Terraform apply"
+
