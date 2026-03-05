@@ -11,12 +11,19 @@ jobs:
       - run: echo "This is before approval"
       - run: echo "Hellow marrow"
       - run: echo "Terraform plan"
-    environment:
-      name: Test-stage
   Apply:
     runs-on: ubuntu-latest
+    environment:
+      name: Test-stage
     steps:
       - run: echo "This is After approval"
       - run: echo "Bye marrow"
       - run: echo "Terraform apply"
+  Test:
+    runs-on: ubuntu-latest
+    environment:
+      name: Test-stage
+    steps:
+      - run: echo "This is After approval test"
+      - run: echo "test marrow"
 
