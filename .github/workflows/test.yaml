@@ -8,6 +8,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     environment:
-      name: Test-staging
+      name: Test-stage
     steps:
       - run: echo "If this runs, approval was granted"
