@@ -1,7 +1,9 @@
 name: Test Environment Approval
 
 on:
-workflow_dispatch:
+push:
+branches:
+- main
 
 jobs:
 test-environment:
@@ -13,5 +15,5 @@ environment:
 
 steps:
   - name: Print message
-    run: echo "Environment approved and job started!"
+    run: echo "If you see this, the environment approval was granted!"
 ```
