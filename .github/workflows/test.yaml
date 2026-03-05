@@ -1,0 +1,17 @@
+name: Test Environment Approval
+
+on:
+workflow_dispatch:
+
+jobs:
+test-environment:
+runs-on: ubuntu-latest
+
+```
+environment:
+  name: Test-staging
+
+steps:
+  - name: Print message
+    run: echo "Environment approved and job started!"
+```
