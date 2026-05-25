@@ -12,5 +12,4 @@ deliverables:
           value: 'yes'
         - name: 'args.css'
           value: 'dita-ot-doc.css'
-        - name: 'args.csspath'
-          value: 'css'
+
