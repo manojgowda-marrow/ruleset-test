@@ -1,0 +1,100 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ikigai-web
+  namespace: internal
+  labels:
+    app: ikigai-web
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app: ikigai-web
+  template:
+    metadata:
+      labels:
+        app: ikigai-web
+      annotations:
+        sidecar.opentelemetry.io/inject: "true"
+    spec:
+      serviceAccountName : ikigai-web-role-internal
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        runAsNonRoot: true
+      initContainers:
+      - name: rounds-ikigai-web
+        image: 961328178101.dkr.ecr.ap-south-1.amazonaws.com/rounds-ikigai-web:v1.127.0
+        command: ["/bin/sh","-c"]
+        args: ["mkdir -p /app/common/static && cp -r static/dist /app/common/static/dist"]
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            memory: "200M"
+            cpu: "100m"
+          limits:
+            memory: "200M"
+            cpu: "100m"
+        volumeMounts:
+          - name: common-volume
+            mountPath: /app/common
+      containers:
+      # Python proxy
+      - name: rounds-proxy # Name of the container
+        image: 961328178101.dkr.ecr.ap-south-1.amazonaws.com/rounds-ikigai-proxy:v3.20.2
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: OTEL_EXPORTER_OTLP_PROTOCOL
+          value: "http/protobuf"
+        - name: SERVICE_NAME
+          value: "ikigai-proxy"
+        - name: SERVICE_VERSION
+          value: "v3.9.3"
+        - name: OTEL_INSTRUMENTATION_HTTP_CAPTURE_HEADERS_SERVER_REQUEST
+          value: ".*"
+        - name: OTEL_INSTRUMENTATION_HTTP_CAPTURE_HEADERS_SANITIZE_FIELDS
+          value: ".*cookie.*"
+        command: ["/bin/sh","-c"]
+        args: ["cp /settings/local_settings.py /app/webapp/local_settings.py && cp -r /app/common/static /app/webapp && cp /app/common/static/dist/index.html /app/webapp/templates/new_ikigai.html && python3 runserver.py"]
+        resources:
+          requests:
+            memory: "2G"
+            cpu: "300m"
+          limits:
+            memory: "2G"
+            cpu: "400m"
+        readinessProbe:
+          tcpSocket:
+            port: 8088
+          initialDelaySeconds: 10
+          periodSeconds: 20
+        livenessProbe:
+          tcpSocket:
+            port: 8088
+          initialDelaySeconds: 10
+          periodSeconds: 30
+        volumeMounts:
+        - name: ikigai-web-local-settings
+          mountPath: /settings
+          readOnly: true
+        - name: googlesa
+          mountPath: /googlesa
+          readOnly: true
+        - name: common-volume
+          mountPath: /app/common
+      nodeSelector:
+        workload: monitoring-dr
+      volumes:
+      - name: ikigai-web-local-settings
+        configMap:
+          name: ikigai-web-local-settings
+      - name: googlesa
+        secret:
+          secretName: googlesa
+      - name: common-volume
+        emptyDir: {}
