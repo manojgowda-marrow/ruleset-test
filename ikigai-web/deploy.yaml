@@ -46,7 +46,7 @@ spec:
       containers:
       # Python proxy
       - name: rounds-proxy # Name of the container
-        image: 961328178101.dkr.ecr.ap-south-1.amazonaws.com/rounds-ikigai-proxy:v3.20.2
+        image: 961328178101.dkr.ecr.ap-south-1.amazonaws.com/rounds-ikigai-proxy:v0.0.2
         imagePullPolicy: IfNotPresent
         env:
         - name: OTEL_EXPORTER_OTLP_PROTOCOL
