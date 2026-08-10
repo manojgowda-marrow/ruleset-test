@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-api-two
+  namespace: internal
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: demo-api-two
+  template:
+    metadata:
+      labels:
+        app: demo-api-two
+    spec:
+      containers:
+      - name: demo-api-two
+        image: 961328178101.dkr.ecr.ap-south-1.amazonaws.com/rounds-api-test:v0.0.1
+        imagePullPolicy: IfNotPresent
