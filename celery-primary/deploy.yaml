@@ -23,7 +23,7 @@ spec:
       serviceAccountName : celery
       containers:
       - name: celery-primary # Name of the container
-        image: 961328178101.dkr.ecr.ap-south-1.amazonaws.com/rounds-api:v8.6.3
+        image: 961328178101.dkr.ecr.ap-south-1.amazonaws.com/rounds-api:v0.0.4
         imagePullPolicy: IfNotPresent
         env:
         - name: ROUNDS_ENABLE_CELERY
