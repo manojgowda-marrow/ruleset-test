@@ -23,7 +23,7 @@ spec:
       serviceAccountName : celery
       containers:
       - name: celery-datataskq # Name of the container
-        image: 961328178101.dkr.ecr.ap-south-1.amazonaws.com/rounds-api:celery-v8.6.3
+        image: 961328178101.dkr.ecr.ap-south-1.amazonaws.com/rounds-api:celery-v0.0.5
         imagePullPolicy: IfNotPresent
         env:
         - name: ROUNDS_ENABLE_CELERY
