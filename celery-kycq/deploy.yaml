@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: celery-kycq
+  namespace: celery
+  labels:
+    app: celery-kycq
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app: celery-kycq
+  template:
+    metadata:
+      labels:
+        app: celery-kycq
+    spec:
+      serviceAccountName : celery
+      containers:
+      - name: celery-kycq # Name of the container
+        image: 961328178101.dkr.ecr.ap-south-1.amazonaws.com/rounds-api:v8.6.3
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: ROUNDS_ENABLE_CELERY
+          value: enabled
+        - name: ROUNDS_ENV # For Secrets Manager
+          value: dev
+        - name: GRAYLOG_HOST
+          value: "10.0.1.40"
+        - name: GRAYLOG_PORT
+          value: "12201"
+        command: ["/bin/sh","-c"]
+        args: ["cp /settings/local_settings.py /app/kernel/local_settings.py && celery  --app=runcelery worker -Q KYCQ --loglevel=info -P gevent --autoscale=5,2"]
+        ports:
+        - containerPort: 8000 # Port that the container expose
+        resources:
+          requests:
+            memory: "700M"
+            cpu: "250m"
+          limits:
+            memory: "1G"
+            cpu: "300m"
+        volumeMounts:
+        - name: celery-kycq-local-settings
+          mountPath: /settings
+          readOnly: true
+        - name: key1
+          mountPath: /etc/ssh-key1
+        - name: key2
+          mountPath: /etc/ssh-key2
+      nodeSelector:
+        workload: marrow-api
+      volumes:
+      - name: celery-kycq-local-settings
+        configMap:
+          name: celery-local-settings
+      - name: key1
+        secret:
+          secretName: 3176b6db91af79067cbb902a90bdffd3
+      - name: key2
+        secret:
+          secretName: pk

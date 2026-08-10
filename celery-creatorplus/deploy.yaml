@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: celery-creatorplus
+  namespace: celery
+  labels:
+    app: celery-creatorplus
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app: celery-creatorplus
+  template:
+    metadata:
+      labels:
+        app: celery-creatorplus
+    spec:
+      serviceAccountName : celery
+      containers:
+      - name: celery-creatorplus # Name of the container
+        image: 961328178101.dkr.ecr.ap-south-1.amazonaws.com/rounds-api:v8.6.3
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: ROUNDS_ENABLE_CELERY
+          value: enabled
+        - name: ROUNDS_ENV # For Secrets Manager
+          value: dev
+        - name: GRAYLOG_HOST
+          value: "10.0.1.40"
+        - name: GRAYLOG_PORT
+          value: "12201"
+        command: ["/bin/sh","-c"]
+        args: ["cp /settings/local_settings.py /app/kernel/local_settings.py && celery --app=runcelery worker -Q CREATORPLUSQ --loglevel=info -P gevent --autoscale=5,2"]
+        ports:
+        - containerPort: 8000 # Port that the container expose
+        resources:
+          requests:
+            memory: "400M"
+            cpu: "300m"
+          limits:
+            memory: "700M"
+            cpu: "500m"
+        volumeMounts:
+        - name: celery-creator-plus-local-settings
+          mountPath: /settings
+          readOnly: true
+      nodeSelector:
+        workload: marrow-api
+      volumes:
+      - name: celery-creator-plus-local-settings
+        configMap:
+          name: celery-local-settings

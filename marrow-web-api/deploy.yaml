@@ -1,0 +1,83 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: marrow-web-api
+  namespace: default
+  labels:
+    app: marrow-web-api
+spec:
+  replicas: 6
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app: marrow-web-api
+  template:
+    metadata:
+      labels:
+        app: marrow-web-api
+    spec:
+      serviceAccountName : api-role
+      containers:
+      - name: rounds-api # Name of the container
+        image: 961328178101.dkr.ecr.ap-south-1.amazonaws.com/rounds-api:v8.6.3
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: ROUNDS_ENABLE_APPS
+          value: marrow
+        - name: ROUNDS_ENV # For Secrets Manager
+          value: dev
+        - name: GRAYLOG_HOST
+          value: "10.0.1.40"
+        - name: GRAYLOG_PORT
+          value: "12201"
+        command: ["/bin/sh","-c"]
+        args: ["cp /settings/local_settings.py /app/kernel/local_settings.py && python3 runserver.py"]
+        ports:
+        - containerPort: 8000 # Port that the container expose
+        resources:
+          requests:
+            memory: "2G"
+            cpu: "750m"
+          limits:
+            memory: "2G"
+            cpu: "750m"
+        readinessProbe:
+          tcpSocket:
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 20
+        livenessProbe:
+          tcpSocket:
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 30
+        volumeMounts:
+        - name: marrow-web-api-local-settings
+          mountPath: /settings
+          readOnly: true
+        - name: key1
+          mountPath: /etc/ssh-key1
+        - name: key2
+          mountPath: /etc/ssh-key2
+        - name: key3
+          mountPath: /video-zip-pg
+      nodeSelector:
+        workload: dr-api
+      volumes:
+      - name: marrow-web-api-local-settings
+        configMap:
+          name: marrow-web-api-local-settings
+      - name: key1
+        secret:
+          secretName: 3176b6db91af79067cbb902a90bdffd3
+      - name: key2
+        secret:
+          secretName: pk
+      - name: key3
+        secret:
+          secretName: pk-pg

@@ -1,0 +1,35 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: custom-video-zip-task
+  namespace: celery
+spec:
+  schedule: "*/2 * * * *"
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 3600
+      template:
+        spec:
+          serviceAccountName : celery
+          containers:
+          - name: custom-video-zip
+            image: 961328178101.dkr.ecr.ap-south-1.amazonaws.com/rounds-api:v8.3.18
+            imagePullPolicy: IfNotPresent
+            env:
+            - name: ROUNDS_ENABLE_CELERY
+              value: enabled
+            - name: ROUNDS_ENV # For Secrets Manager
+              value: dev
+            command: ["/bin/sh","-c"]
+            args: ["cp /settings/local_settings.py /app/kernel/local_settings.py && cd scripts/video_zip && python3 custom_dual_manifest_zipping_mc_main.py"]
+            volumeMounts:
+            - name: custom-zip-local-settings
+              mountPath: /settings
+              readOnly: true
+          restartPolicy: Never
+          nodeSelector:
+            workload: dr-api
+          volumes:
+          - name: custom-zip-local-settings
+            configMap:
+              name: celery-local-settings

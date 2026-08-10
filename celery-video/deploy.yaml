@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: celery-video
+  namespace: celery
+  labels:
+    app: celery-video
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app: celery-video
+  template:
+    metadata:
+      labels:
+        app: celery-video
+    spec:
+      serviceAccountName : celery
+      containers:
+      - name: celery-video # Name of the container
+        image: 961328178101.dkr.ecr.ap-south-1.amazonaws.com/rounds-api:v8.6.3
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: ROUNDS_ENABLE_CELERY
+          value: enabled
+        - name: ROUNDS_ENV # For Secrets Manager
+          value: dev
+        - name: GRAYLOG_HOST
+          value: "10.0.1.40"
+        - name: GRAYLOG_PORT
+          value: "12201"
+        command: ["/bin/sh","-c"]
+        args: ["cp /settings/local_settings.py /app/kernel/local_settings.py && celery --app=runcelery worker -Q MEDIAQ --loglevel=info -P gevent --autoscale=5,2 "]
+        resources:
+          requests:
+            memory: "500M"
+            cpu: "200m"
+          limits:
+            memory: "800M"
+            cpu: "200m"
+        volumeMounts:
+        - name: celery-video-local-settings
+          mountPath: /settings
+          readOnly: true
+        - name: key1
+          mountPath: /etc/ssh-key1
+        - name: key2
+          mountPath: /etc/ssh-key2
+        - name: cpix-private-key
+          mountPath: /buydrm-cpix/private
+        - name: cpix-public-key
+          mountPath: /buydrm-cpix/public
+        - name: cpix-api-public-key
+          mountPath: /buydrm-cpix/api-public
+      nodeSelector:
+        workload: marrow-api
+      volumes:
+      - name: celery-video-local-settings
+        configMap:
+          name: celery-local-settings
+      - name: key1
+        secret:
+          secretName: 3176b6db91af79067cbb902a90bdffd3
+      - name: key2
+        secret:
+          secretName: pk
+      - name: cpix-private-key
+        secret:
+          secretName: cpix-private-key
+      - name: cpix-public-key
+        secret:
+          secretName: cpix-public-key
+      - name: cpix-api-public-key
+        secret:
+          secretName: cpix-api-public-key
